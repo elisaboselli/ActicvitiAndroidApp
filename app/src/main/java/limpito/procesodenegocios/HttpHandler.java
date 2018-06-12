@@ -2,8 +2,10 @@ package limpito.procesodenegocios;
 
 import android.util.Base64;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -32,8 +34,8 @@ public class HttpHandler {
         try {
             url = new URL(reqUrl);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
+            //conn.setDoOutput(true);
+            //conn.setDoInput(true);
             conn.setRequestMethod(method);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("charset", "UTF-8");
@@ -43,27 +45,51 @@ public class HttpHandler {
             conn.setRequestProperty("Authorization", basicAuth);
 
             if (POST.equals(method)) {
-                //String input = "{ \"action\":\"complete\"} ";
+                String input = "{ \"action\":\"complete\"} ";
                 //String input = "{\"action\":\"complete\",\"variables\":[{\"name\":\"id_boolvalue\",\"value\":\"false\"}]}";
-                String input = body;
+                //String input = body;
                 OutputStream os = conn.getOutputStream();
                 os.write(input.getBytes());
                 os.flush();
                 os.close();
             }
 
-            rd = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+            InputStream in = new BufferedInputStream(conn.getInputStream());
+            return convertStreamToString(in);
+
+            /*rd = new BufferedReader(new InputStreamReader((conn.getInputStream())));
             while ((line = rd.readLine()) != null) {
                 result += line;
             }
             rd.close();
 
-            return result;
+            return result;*/
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 
 }
