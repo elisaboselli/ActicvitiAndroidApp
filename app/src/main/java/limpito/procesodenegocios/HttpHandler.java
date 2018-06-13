@@ -27,15 +27,11 @@ public class HttpHandler {
 
         URL url;
         HttpURLConnection conn;
-        BufferedReader rd;
-        String line;
         String result = "";
 
         try {
             url = new URL(reqUrl);
             conn = (HttpURLConnection) url.openConnection();
-            //conn.setDoOutput(true);
-            //conn.setDoInput(true);
             conn.setRequestMethod(method);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("charset", "UTF-8");
@@ -45,9 +41,7 @@ public class HttpHandler {
             conn.setRequestProperty("Authorization", basicAuth);
 
             if (POST.equals(method)) {
-                String input = "{ \"action\":\"complete\"} ";
-                //String input = "{\"action\":\"complete\",\"variables\":[{\"name\":\"id_boolvalue\",\"value\":\"false\"}]}";
-                //String input = body;
+                String input = body;
                 OutputStream os = conn.getOutputStream();
                 os.write(input.getBytes());
                 os.flush();
@@ -56,14 +50,6 @@ public class HttpHandler {
 
             InputStream in = new BufferedInputStream(conn.getInputStream());
             return convertStreamToString(in);
-
-            /*rd = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-            while ((line = rd.readLine()) != null) {
-                result += line;
-            }
-            rd.close();
-
-            return result;*/
 
         } catch (IOException e) {
             e.printStackTrace();
