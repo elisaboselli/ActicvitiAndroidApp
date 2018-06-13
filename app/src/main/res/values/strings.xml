@@ -2,4 +2,5 @@
     <string name="app_name">Proceso de Negocios</string>
     <string name="user">User</string>
     <string name="password">Password</string>
+    <string name="login">Login</string>
 </resources>
