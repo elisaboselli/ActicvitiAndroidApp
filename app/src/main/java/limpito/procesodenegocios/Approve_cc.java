@@ -18,15 +18,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Approve_cc extends AppCompatActivity {
 
     private String TAG = Approve_cc.class.getSimpleName();
 
-    private static String ip = "192.168.100.5";
-    private static String url_get = "http://" + ip + ":8080/activiti-rest/service/runtime/tasks?assignee=kermit";
-    private static String url_post = "http://" + ip + ":8080/activiti-rest/service/runtime/tasks/"; // + tasId
+    private final String METHOD_GET = "GET";
+    private final String METHOD_POST = "POST";
+
+    private static String ip;
+    private static String url_get;
+    private static String url_post;
+    private static String user;
+    private static String password;
 
     private ProgressDialog pDialog;
 
@@ -39,11 +45,22 @@ public class Approve_cc extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_approve_cc);
 
-        taskList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(Approve_cc.this,android.R.layout.simple_list_item_1,taskList);
-        listView = findViewById(R.id.id_task_list);
+        try {
+            ip = PropertiesUtil.getProperty("http",getApplicationContext()) + PropertiesUtil.getProperty("ip",getApplicationContext());
+            url_get = ip + PropertiesUtil.getProperty("get",getApplicationContext()) + PropertiesUtil.getProperty("user",getApplicationContext());
+            url_post = ip + PropertiesUtil.getProperty("post",getApplicationContext()); // + taskId
 
-        new GetTasks().execute();
+            user = PropertiesUtil.getProperty("user",getApplicationContext());
+            password = PropertiesUtil.getProperty("pass",getApplicationContext());
+
+            taskList = new ArrayList<>();
+            adapter = new ArrayAdapter<>(Approve_cc.this,android.R.layout.simple_list_item_1,taskList);
+            listView = findViewById(R.id.id_task_list);
+
+            new GetTasks().execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class GetTasks extends AsyncTask<Void, Void, Void> {
@@ -62,7 +79,7 @@ public class Approve_cc extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             HttpHandler handler = new HttpHandler();
 
-            String jsonStr = handler.makeServiceCallAuth(url_get,"kermit","kermit","GET", null);
+            String jsonStr = handler.makeServiceCallAuth(url_get,user,password,METHOD_GET, null);
 
             if (jsonStr != null) {
                 try {
@@ -172,7 +189,7 @@ public class Approve_cc extends AppCompatActivity {
             String body = getBody(approved);
 
             HttpHandler handler = new HttpHandler();
-            handler.makeServiceCallAuth(url_post + taskId,"kermit","kermit","POST", body);
+            handler.makeServiceCallAuth(url_post + taskId,user,password,METHOD_POST, body);
 
             int size = taskList.size()-1;
             for(int i=size; i>=0; i--){
@@ -191,10 +208,17 @@ public class Approve_cc extends AppCompatActivity {
         }
 
         private String getBody(boolean approved){
-            if(approved)
-                return "{\"action\":\"complete\",\"variables\":[{\"name\":\"id_boolvalue\",\"value\":\"true\"}]}";
-            else
-                return "{\"action\":\"complete\",\"variables\":[{\"name\":\"id_boolvalue\",\"value\":\"false\"}]}";
+            String body;
+            try {
+                if (approved)
+                    body = PropertiesUtil.getProperty("body_approve", getApplicationContext());
+                else
+                    body = PropertiesUtil.getProperty("body_deny", getApplicationContext());
+                return body;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
     }
