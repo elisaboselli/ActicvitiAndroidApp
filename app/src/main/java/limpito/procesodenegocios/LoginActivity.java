@@ -45,9 +45,9 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 });
                         alertDialog.show();
-                        user_et.setText("");
-                        pass_et.setText("");
                     }
+                    user_et.setText("");
+                    pass_et.setText("");
                 }
             });
         } catch (IOException e) {
