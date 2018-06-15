@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -10,21 +11,23 @@
         android:layout_height="wrap_content"
         android:paddingBottom="2dip"
         android:paddingTop="6dip"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimary"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="(000000) - Approve CC"/>
 
     <TextView
-        android:id="@+id/task_name"
+        android:id="@+id/task_desc"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="2dip"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorAccent"
+        tools:text="Approve account opening on behalf of ..."/>
 
     <TextView
-        android:id="@+id/algo_mas"
+        android:id="@+id/task_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#5d5d5d"
-        android:textStyle="bold" />
+        android:textColor="@color/infoColor"
+        tools:text="Created on 15/06/2018 from Process Instance 000000"/>
 </LinearLayout>
