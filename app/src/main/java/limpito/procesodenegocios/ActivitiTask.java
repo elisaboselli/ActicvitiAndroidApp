@@ -13,7 +13,7 @@ public class ActivitiTask {
         this.name = name;
         this.pinstance_id = pinstance_id;
 
-        if(desc==null)
+        if("null".equals(desc))
             this.desc = "No description provided.";
         else
             this.desc = desc;
