@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -37,8 +36,8 @@ public class Approve_cc extends AppCompatActivity {
     private ProgressDialog pDialog;
 
     private ListView listView;
-    private ArrayList<String> taskList;
-    private ArrayAdapter<String> adapter;
+    private ArrayList<ActivitiTask> taskList;
+    private ActivitiTaskAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +53,9 @@ public class Approve_cc extends AppCompatActivity {
             password = PropertiesUtil.getProperty("pass",getApplicationContext());
 
             taskList = new ArrayList<>();
-            adapter = new ArrayAdapter<>(Approve_cc.this,android.R.layout.simple_list_item_1,taskList);
+
+            adapter = new ActivitiTaskAdapter(Approve_cc.this,taskList);
+
             listView = findViewById(R.id.id_task_list);
 
             new GetTasks().execute();
@@ -91,9 +92,13 @@ public class Approve_cc extends AppCompatActivity {
 
                         String id = t.getString("id");
                         String name = t.getString("name");
+                        String desc = t.getString("description");
+                        String created = t.getString("createTime");
+                        String pinstance_id = t.getString("processInstanceId");
 
-                        String taskString = "(" + id + ") "+ name;
-                        taskList.add(taskString);
+                        ActivitiTask at = new ActivitiTask(id,name,desc,created,pinstance_id);
+
+                        taskList.add(at);
 
                     }
                 } catch (final JSONException e) {
@@ -136,16 +141,16 @@ public class Approve_cc extends AppCompatActivity {
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                    final String taskId = taskList.get(position).substring(1,7);
+                    final ActivitiTask at = taskList.get(position);
 
                     AlertDialog alertDialog = new AlertDialog.Builder(Approve_cc.this).create();
-                    alertDialog.setTitle(taskId);
-                    alertDialog.setMessage("Info de la task\n Bla bla bla\n");
+                    alertDialog.setTitle(at.getPrintableName());
+                    alertDialog.setMessage(at.getDescription());
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Approve",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    PostTaskParams params = new PostTaskParams(taskId, position,true);
+                                    PostTaskParams params = new PostTaskParams(at.getId(), position,true);
                                     new PostTask().execute(params);
                                 }
                             });
@@ -153,7 +158,7 @@ public class Approve_cc extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    PostTaskParams params = new PostTaskParams(taskId, position, false);
+                                    PostTaskParams params = new PostTaskParams(at.getId(), position, false);
                                     new PostTask().execute(params);
                                 }
                             });
