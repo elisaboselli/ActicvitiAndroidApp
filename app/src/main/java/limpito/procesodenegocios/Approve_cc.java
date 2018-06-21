@@ -45,7 +45,7 @@ public class Approve_cc extends AppCompatActivity {
         setContentView(R.layout.activity_approve_cc);
 
         try {
-            ip = PropertiesUtil.getProperty("http",getApplicationContext()) + PropertiesUtil.getProperty("ip",getApplicationContext());
+            ip = PropertiesUtil.getProperty("ip",getApplicationContext());
             url_get = ip + PropertiesUtil.getProperty("get",getApplicationContext()) + PropertiesUtil.getProperty("user",getApplicationContext());
             url_post = ip + PropertiesUtil.getProperty("post",getApplicationContext()); // + taskId
 
@@ -90,13 +90,13 @@ public class Approve_cc extends AppCompatActivity {
                     for (int i = 0; i < tasks.length(); i++) {
                         JSONObject t = tasks.getJSONObject(i);
 
-                        String id = t.getString("id");
-                        String name = t.getString("name");
-                        String desc = t.getString("description");
-                        String created = t.getString("createTime");
-                        String pinstance_id = t.getString("processInstanceId");
+                        ActivitiTask at = new ActivitiTask();
 
-                        ActivitiTask at = new ActivitiTask(id,name,desc,created,pinstance_id);
+                        at.setId(t.getString("id"));
+                        at.setName(t.getString("name"));
+                        at.setDescription(t.getString("description"));
+                        at.setCreated(t.getString("createTime"));
+                        at.setPInstance(t.getString("processInstanceId"));
 
                         taskList.add(at);
 
