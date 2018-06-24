@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -87,22 +86,34 @@ public class Approve_cc extends AppCompatActivity {
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     JSONArray tasks = jsonObj.getJSONArray("data");
 
-                    for (int i = 0; i < tasks.length(); i++) {
-                        JSONObject t = tasks.getJSONObject(i);
+                    if(tasks.length()==0){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "No tasks found.",
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+                    } else {
 
-                        ActivitiTask at = new ActivitiTask();
+                        for (int i = 0; i < tasks.length(); i++) {
+                            JSONObject t = tasks.getJSONObject(i);
 
-                        at.setId(t.getString("id"));
-                        at.setName(t.getString("name"));
-                        at.setDescription(t.getString("description"));
-                        at.setCreated(t.getString("createTime"));
-                        at.setPInstance(t.getString("processInstanceId"));
+                            ActivitiTask at = new ActivitiTask();
 
-                        taskList.add(at);
+                            at.setId(t.getString("id"));
+                            at.setName(t.getString("name"));
+                            at.setDescription(t.getString("description"));
+                            at.setCreated(t.getString("createTime"));
+                            at.setPInstance(t.getString("processInstanceId"));
 
+                            taskList.add(at);
+
+                        }
                     }
                 } catch (final JSONException e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -115,7 +126,6 @@ public class Approve_cc extends AppCompatActivity {
 
                 }
             } else {
-                Log.e(TAG, "Couldn't get json from server.");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
